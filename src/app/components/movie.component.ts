@@ -1,40 +1,11 @@
 import { Component } from '@angular/core';
+import { PostsService } from '../services/posts.service';
 
 @Component({
-  selector: 'movie',
-  template: `
-    <h1>{{name}}'s Top Tens</h1>
-    <button (click)="toggle2016()">{{show2016 ? "Hide 2016" : "Show 2016"}}</button>
-    <div *ngIf="show2016">
-      <h3>Movies 2016:</h3>
-      <ol>
-        <li *ngFor="let movie of movies2016">{{movie}}</li>
-        <li>{{missing2016}}</li>
-      </ol>
-      <form>
-        <label>Number 11: </label>
-        <br>
-        <input type="text" name="missing2016" [(ngModel)]="missing2016"/>
-      </form>
-    </div>
-
-
-
-    <hr>
-    <button (click)="toggle2015()">{{show2015 ? "Hide 2015" : "Show 2015"}}</button>
-    <div *ngIf="show2015">
-      <h3>Movies 2015:</h3>
-      <ol>
-        <li *ngFor="let movie of movies2015; let i = index">
-          {{movie}} <button (click)="deleteMovie2015(i)">X</button>
-        </li>
-      </ol>
-      <form (submit)="addMovie2015(movie2015.value)">
-        <label>Add 2015 Movie: </label><br>
-        <input type="text" #movie2015 /><br>
-      </form>
-    </div>
-  `,
+    moduleId: module.id,
+    selector: 'movie',
+    templateUrl: 'movie.component.html',
+    providers: [PostsService]
 })
 export class MovieComponent  {
   name: string;
@@ -42,8 +13,10 @@ export class MovieComponent  {
   movies2015: string[];
   missing2016: string;
   show2015: boolean;
+  show2016: boolean;
+  posts:Post[];
 
-  constructor(){
+  constructor(private postsService: PostsService){
     this.name = 'Joel';
     this.email = 'joeltwaage@gmail.com';
     this.movies2016 = ['Moonlight','The VVitch','Elle','The Lobster','Jackie','Mancheego by the Cheese','OJ: Made in America','A Monster Calls','Hunt for the Wilderpeople','Captain Fantastic'];
@@ -51,6 +24,10 @@ export class MovieComponent  {
     this.movies2015 = ['Mad Max: Fury Road','Spotlight','Spy','Carol','Hateful 8','Anomalisa','Steve Jobs','Inside Out','The Martian','Sicario'];
     this.show2016 = false;
     this.show2015 = false;
+
+    this.postsService.getPosts().subscribe(posts => {
+      this.posts = posts;
+    });
   }
 
   toggle2016(){
@@ -74,4 +51,10 @@ export class MovieComponent  {
   deleteMovie2015(i){
     this.movies2015.splice(i, 1);
   }
+}
+
+interface Post{
+  id: number;
+  title: string;
+  body: string;
 }
